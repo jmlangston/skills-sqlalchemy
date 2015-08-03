@@ -13,15 +13,49 @@ db = SQLAlchemy()
 # Part 1: Compose ORM
 
 class Model(db.Model):
+    """Defines Model table in database."""
 
     __tablename__ = "models"
-    pass
+
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer, nullable=False)
+    brand_name = db.Column(db.String, db.ForeignKey('brands.name'), nullable=False)
+    name = db.Column(db.String, nullable=False)
+    brand = db.relationship('Brand', backref=db.backref('model'))
+
+    # JML note: line 22 throws an error ("non-keyword arg after keyword arg")
+    # when written as
+    # brand_name = db.Column(db.String, nullable=False, db.ForeignKey('brands.name'))
+
+    # If the foreign key argument is written as a keyword argument there's no error
+    # foreign_key = db.ForeignKey('brands.name')
+
+    # If the foreign key argument is passed without 'foreign_key='
+    # it must be positioned before the keyword argument 'nullable=false'
+
+    def __repr__(self):
+        """Show information about car model."""
+
+        return "<Model id=%d, year=%d, brand_name=%s, name=%s, brand=%s" % (self.id, self.year, self.brand_name, self.name, self.brand)
 
 
 class Brand(db.Model):
 
+    """Defines Brand table in database. A brand can have many models."""
+
     __tablename__ = "brands"
-    pass
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    founded = db.Column(db.Integer, nullable=False)
+    headquarters = db.Column(db.String, nullable=False)
+    discontinued = db.Column(db.Integer)
+
+    # def __repr__(self):
+    #     """Show information about brand."""
+
+    #     return "<Brand id=%d name=%s founded=%d headquarters=%s discontinued=%d>" % (self.id, self.name, self.founded, self.headquarters, self.discontinued)
+
 
 # End Part 1
 ##############################################################################
